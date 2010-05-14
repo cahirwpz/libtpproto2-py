@@ -17,18 +17,29 @@ class EnumerationStructure(IntegerStructure):
 
 				if not isinstance(name, StringTypes):
 					raise TypeError("Name of %i must be a string!" % id)
+
+			self.keys = dict( (v,k) for k, v in self.values.items() )
 		
 	def check(self, value):
 		if isinstance(value, (IntType, LongType)):
-			if value in self.values.values():
-				return True
+			if value in self.keys:
+				return value
 			else:
-				raise ValueError("Number %s not in enumeration values." % (value,))
+				raise ValueError("Number %s not in enumeration values." % value)
 
 		elif isinstance(value, StringTypes):
 			if value in self.values:
-				return	True
+				return self.values[ value ]
 			else:
-				raise ValueError("String %s not in enumeration keys." % (value,))
+				raise ValueError("String %s not in enumeration keys." % value)
 		else:
 			raise TypeError("Value must be an integer or string.")
+
+	def as_string(self, obj, objcls):
+		try:
+			return self.keys[ getattr(obj, "_"+self.name) ]
+		except AttributeError, e:
+			raise AttributeError("No value defined for %s" % self.name)
+
+	def __set__(self, obj, value):
+		setattr(obj, "_"+self.name, self.check(value))
