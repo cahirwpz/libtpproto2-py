@@ -95,6 +95,7 @@ class Parser(object):
 		root = document.documentElement
 		if root.nodeName != "protocol":
 			raise ValueError("Outermost tag of %s is %s, not protocol" % (file, root.nodeName))
+		self.objects.version = root.attributes['version'].value
 		if str(root.attributes['version'].value) == 'TP03':
 			self.objects.Header = objects_auto._makeHeader('TP03')
 		elif str(root.attributes['version'].value) == 'TP04':
