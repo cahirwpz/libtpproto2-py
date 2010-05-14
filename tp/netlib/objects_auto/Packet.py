@@ -36,9 +36,8 @@ class PacketMeta(type):
 		""")
 
 	def __str__(self):
-		#This doesn't work because some packets have a "name" structure.
-		#return "<dynamic-class '%s' at %s>" % (self.name, hex(id(self)))
-		return "<dynamic-class at %s>" % hex(id(self))
+		return "<dynamic-class '%s' at %s>" % (self._name, hex(id(self)))
+
 	__repr__ = __str__
 
 class Packet(object):
