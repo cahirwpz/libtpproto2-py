@@ -1,19 +1,9 @@
-
-from tp.netlib.xstruct import pack, unpack, hexbyte
+from itertools import izip
 
 class PacketMeta(type):
-	def get_structures(cls):
-		parent = cls.__bases__[0]
-		r = []
-		if parent != Packet:
-			r += parent.structures
-		if cls.__dict__.has_key('_structures'):
-			r += cls._structures
-		return r
-
-	def set_structures(cls, value):
-		cls._structures = value
-	structures = property(get_structures, set_structures,"""\
+	@property
+	def structures(cls):
+		"""
 		get_structures() -> [<structure>,]
 
 		A list of structures. Cascades up the parent classes.
@@ -33,7 +23,19 @@ class PacketMeta(type):
 		>>>
 		>>>print B.structure
 		[<structure 0x123456>, <structure 0x7890123>,]
-		""")
+		"""
+
+		parent = cls.__bases__[0]
+		r = []
+		if parent != Packet:
+			r += parent.structures
+		if cls.__dict__.has_key('_structures'):
+			r += cls._structures
+		return r
+
+	@structures.setter
+	def structures(cls, value):
+		cls._structures = value
 
 	def __str__(self):
 		return "<dynamic-class '%s' at %s>" % (self._name, hex(id(self)))
@@ -42,38 +44,36 @@ class PacketMeta(type):
 
 class Packet(object):
 	__metaclass__ = PacketMeta
+
 	name = "Root Packet"
 
-	def __init__(self, *arguments):
+	def __init__(self, *args):
 		self.structures = self.__class__.structures
 
-		if len(arguments) == 0:
+		if len(args) == 0:
 			return
 
-		if len(arguments) < len(self.structures):
-			raise ValueError("Not enough arguments given (received %s rather than %s)" % (len(arguments), len(self.structures)))
-		
-		arguments = list(arguments)
+		if len(args) < len(self.structures):
+			raise ValueError("Not enough arguments given (received %s rather than %s)" % (len(args), len(self.structures)))
 		
 		# Check each argument is valid
-		for structure in self.structures:
-			argument = arguments.pop(0)
+		for structure, argument in izip(self.structures, args):
 			structure.check(argument)
 			structure.__set__(self, argument)
 			setattr(self, structure.name, argument)
 
+	@property
 	def xstruct(self):
 		xstruct = ""
 		for structure in self.structures:
 			xstruct += structure.xstruct
+		print xstruct
 		return xstruct
-	xstruct = property(xstruct)
 	
 	def pack(self):
-		return ''.join([structure.pack(self) for structure in self.structures])
+		return ''.join( s.pack(self) for s in self.structures )
 	
 	def unpack(self, string):
 		for structure in self.structures:
 			string = structure.unpack(self, string)
 		return string
-

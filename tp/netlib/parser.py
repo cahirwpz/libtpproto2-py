@@ -97,9 +97,9 @@ class Parser(object):
 			raise ValueError("Outermost tag of %s is %s, not protocol" % (file, root.nodeName))
 		self.objects.version = root.attributes['version'].value
 		if str(root.attributes['version'].value) == 'TP03':
-			self.objects.Header = objects_auto._makeHeader('TP03')
+			self.objects.Header = objects_auto.HeaderFactory.makeHeader('TP03')
 		elif str(root.attributes['version'].value) == 'TP04':
-			self.objects.Header = objects_auto._makeHeader('TP\x04\x00')
+			self.objects.Header = objects_auto.HeaderFactory.makeHeader('TP\x04\x00')
 		for child in root.childNodes:
 			if child.nodeName == 'packet':
 				self.buildPacket(child)
@@ -137,6 +137,8 @@ class Parser(object):
 			if attribute in convert:
 				value = convert[attribute](value)
 			setattr(NewPacket, '_' + attribute, value)
+
+		NewPacket.__name__ = str( name )
 		
 		for child in packet.childNodes:
 			if child.nodeName == 'structure':
@@ -292,14 +294,14 @@ class Parser(object):
 					result = []
 					for i in getattr(obj, name):
 						result += getter(i)
+					print "result = ", result
 					return result
 			elif child.nodeName == 'getfield':
 				try:
 					name = child.attributes['name'].value
 				except KeyError:
 					raise ValueError("getlist has no name!")
-				def get(obj):
-					return [(getattr(obj, 'name'), getattr(obj, 'type'), getattr(obj, 'description'))]
+				get = lambda obj: [(getattr(obj, 'name'), getattr(obj, 'type'), getattr(obj, 'description'))]
 			elif child.nodeType not in [child.TEXT_NODE, child.COMMENT_NODE]:
 				raise ValueError("Unrecognized tag in %s: %s" % (parent.nodeName, child.nodeName))
 		return get

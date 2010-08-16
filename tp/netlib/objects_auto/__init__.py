@@ -1,3 +1,2 @@
 from Packet import Packet
-
-from Header import _makeHeader
+from Header import HeaderFactory
