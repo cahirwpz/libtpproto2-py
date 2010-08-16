@@ -5,16 +5,16 @@
 cp tests/test?*.py .
 
 #run the tests
-coverage -e
-coverage -x testxstruct.py
-coverage -x teststructures.py
-coverage -x teststructureaccess.py
-coverage -x testparser.py
-coverage -x testpacking.py
+python-coverage -e
+python-coverage -x testxstruct.py
+python-coverage -x teststructures.py
+python-coverage -x teststructureaccess.py
+python-coverage -x testparser.py
+python-coverage -x testpacking.py
 
 #generate the html report
 mkdir -p html
-coverage -b -d html tp/netlib/xstruct.py tp/netlib/structures/*.py tp/netlib/parser.py
+python-coverage -b -d html tp/netlib/xstruct.py tp/netlib/structures/*.py tp/netlib/parser.py
 
 #get rid of the tests
 rm *.py
