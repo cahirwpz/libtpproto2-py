@@ -27,6 +27,4 @@ class Header( Packet ):
 class HeaderFactory( object ):
 	@staticmethod
 	def makeHeader( version ):
-		cls = Header
-		cls.VERSION = version
-		return cls
+		return type( 'Header', (Header,), dict( VERSION = version ) )
