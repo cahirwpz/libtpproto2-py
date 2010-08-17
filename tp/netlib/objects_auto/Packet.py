@@ -37,8 +37,8 @@ class PacketMeta(type):
 	def structures(cls, value):
 		cls._structures = value
 
-	def __str__(self):
-		return "<dynamic-class '%s' at %s>" % (self._name, hex(id(self)))
+	def __str__( cls ):
+		return "<dynamic-class '%s' at %s>" % (cls.__name__, hex(id(cls)))
 
 	__repr__ = __str__
 
