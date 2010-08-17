@@ -20,7 +20,7 @@ class EnumerationStructure(IntegerStructure):
 
 			self.keys = dict( (v,k) for k, v in self.values.items() )
 		
-	def check(self, value):
+	def check_and_fetch(self, value):
 		if isinstance(value, (IntType, LongType)):
 			if value in self.keys:
 				return value
@@ -35,6 +35,11 @@ class EnumerationStructure(IntegerStructure):
 		else:
 			raise TypeError("Value must be an integer or string.")
 
+	def check(self, value):
+		self.check_and_fetch(value)
+
+		return True
+
 	def as_string(self, obj, objcls):
 		try:
 			return self.keys[ getattr(obj, "_"+self.name) ]
@@ -42,4 +47,4 @@ class EnumerationStructure(IntegerStructure):
 			raise AttributeError("No value defined for %s" % self.name)
 
 	def __set__(self, obj, value):
-		setattr(obj, "_"+self.name, self.check(value))
+		setattr(obj, "_"+self.name, self.check_and_fetch(value))
