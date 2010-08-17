@@ -301,7 +301,8 @@ class Parser(object):
 					name = child.attributes['name'].value
 				except KeyError:
 					raise ValueError("getlist has no name!")
-				get = lambda obj: [(getattr(obj, 'name'), getattr(obj, 'type'), getattr(obj, 'description'))]
+				def get( obj ):
+					return [(getattr(obj, 'name'), getattr(obj, 'type'), getattr(obj, 'description'))]
 			elif child.nodeType not in [child.TEXT_NODE, child.COMMENT_NODE]:
 				raise ValueError("Unrecognized tag in %s: %s" % (parent.nodeName, child.nodeName))
 		return get
