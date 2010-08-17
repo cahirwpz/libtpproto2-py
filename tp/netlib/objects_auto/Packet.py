@@ -64,11 +64,7 @@ class Packet(object):
 
 	@property
 	def xstruct(self):
-		xstruct = ""
-		for structure in self.structures:
-			xstruct += structure.xstruct
-		print xstruct
-		return xstruct
+		return ''.join( s.xstruct for s in self.structures )
 	
 	def pack(self):
 		return ''.join( s.pack(self) for s in self.structures )
